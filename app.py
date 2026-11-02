@@ -1,13 +1,18 @@
 import streamlit as st
+import pandas as pd
+import time
 
-if "user" in st.session_state and st.session_state.user:
-    st.info(f"{st.session_state.user}님 안녕하세요!")
+@st.cache_data
+def load_large_csv():
+    time.sleep(3)  # 로드 지연 시뮬레이션
+    df = pd.DataFrame({"A": range(1000), "B": range(1000, 2000)})
+    return df
 
-st.header("입력 → 출력 폼 예제")
+st.header("📁 캐싱 데이터 로드 테스트")
 
-text = st.text_input("텍스트 입력")
-k = st.slider("반복 횟수", 1, 5, 2)
+t0 = time.perf_counter()
+df = load_large_csv()
+dt = time.perf_counter() - t0
 
-if st.button("실행"):
-    result = (text + " ") * k
-    st.success(result)
+st.write(f"로드 시간: {dt:.2f}초")
+st.dataframe(df.head())
